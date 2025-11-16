@@ -1,0 +1,1 @@
+set(MCU_VARIANT nrf54l15)
