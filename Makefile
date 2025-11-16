@@ -23,12 +23,21 @@ SD_PATH      = lib/softdevice/$(SD_FILENAME)
 ifndef SD_VERSION
 	ifeq ($(MCU_SUB_VARIANT),nrf52833)
 	SD_VERSION = 7.3.0
+	else ifeq ($(MCU_SUB_VARIANT),nrf54l15)
+	SD_VERSION = 1.0.0
 	else
 	SD_VERSION = 6.1.1
 	endif
 endif
 
-SD_FILENAME  = $(SD_NAME)_nrf52_$(SD_VERSION)
+# Set SoftDevice chip family name based on MCU variant
+ifeq ($(MCU_SUB_VARIANT),nrf54l15)
+  SD_CHIP_FAMILY = nrf54l
+else
+  SD_CHIP_FAMILY = nrf52
+endif
+
+SD_FILENAME  = $(SD_NAME)_$(SD_CHIP_FAMILY)_$(SD_VERSION)
 SD_HEX       = $(SD_PATH)/$(SD_FILENAME)_softdevice.hex
 
 MBR_HEX			 = lib/softdevice/mbr/hex/mbr_nrf52_2.4.1_mbr.hex
@@ -102,7 +111,7 @@ GDB_BMP = $(GDB) -ex 'target extended-remote $(BMP_PORT)' -ex 'monitor swdp_scan
 BUILD = _build/build-$(BOARD)
 BIN = _bin/$(BOARD)
 
-# MCU_SUB_VARIANT can be nrf52 (nrf52832), nrf52833, nrf52840
+# MCU_SUB_VARIANT can be nrf52 (nrf52832), nrf52833, nrf52840, nrf54l15
 ifeq ($(MCU_SUB_VARIANT),nrf52)
   CFLAGS += -DNRF52 -DNRF52832_XXAA
   SD_NAME = s132
@@ -122,6 +131,14 @@ else ifeq ($(MCU_SUB_VARIANT),nrf52840)
   DFU_APP_DATA_RESERVED=10*4096
   ifndef SD_NAME
 		SD_NAME = s140
+	endif
+else ifeq ($(MCU_SUB_VARIANT),nrf54l15)
+  CFLAGS += -DNRF54L15_XXAA
+  DFU_DEV_REV = 54115
+  # App reserved 40KB for nRF54L15
+  DFU_APP_DATA_RESERVED=10*4096
+  ifndef SD_NAME
+	SD_NAME = s145
 	endif
 else
   $(error Sub Variant $(MCU_SUB_VARIANT) is unknown)

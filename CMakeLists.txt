@@ -16,6 +16,9 @@ include(${CMAKE_CURRENT_LIST_DIR}/src/boards/${BOARD}/board.cmake)
 if (MCU_VARIANT STREQUAL "nrf5340_application")
   set(CMAKE_SYSTEM_PROCESSOR cortex-m33 CACHE INTERNAL "System Processor")
   set(JLINK_DEVICE nrf5340_xxaa_app)
+elseif (MCU_VARIANT STREQUAL "nrf54l15")
+  set(CMAKE_SYSTEM_PROCESSOR cortex-m33 CACHE INTERNAL "System Processor")
+  set(JLINK_DEVICE nrf54l15_xxaa)
 else ()
   set(CMAKE_SYSTEM_PROCESSOR cortex-m4 CACHE INTERNAL "System Processor")
   set(JLINK_DEVICE ${MCU_VARIANT}_xxaa)
@@ -48,6 +51,8 @@ add_executable(bootloader)
 if(NOT DEFINED SD_VERSION)
   if(MCU_VARIANT STREQUAL "nrf52833")
     set(SD_VERSION 7.3.0)
+  elseif(MCU_VARIANT STREQUAL "nrf54l15")
+    set(SD_VERSION 1.0.0)
   else()
     set(SD_VERSION 6.1.1)
   endif()
@@ -143,6 +148,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
 
   if (MCU_VARIANT STREQUAL "nrf52840")
     target_compile_definitions(bootloader PUBLIC BOOTLOADER_REGION_START=0xEA000)
+  elseif (MCU_VARIANT STREQUAL "nrf54l15")
+    target_compile_definitions(bootloader PUBLIC BOOTLOADER_REGION_START=0x16A000)
   else ()
     target_compile_definitions(bootloader PUBLIC BOOTLOADER_REGION_START=0x6D000)
   endif ()
@@ -219,7 +226,7 @@ endif ()
 
 #----------------------------------------------------
 # MCU Variant differences
-# Supported are: nrf52 (nrf52832), nrf52833, nrf52840
+# Supported are: nrf52 (nrf52832), nrf52833, nrf52840, nrf54l15
 #----------------------------------------------------
 if (MCU_VARIANT STREQUAL "nrf52")
   set(SD_NAME s132)
@@ -241,6 +248,14 @@ elseif (MCU_VARIANT STREQUAL "nrf52840")
   if (NOT DEFINED SD_NAME)
     set(SD_NAME s140)
   endif ()
+elseif (MCU_VARIANT STREQUAL "nrf54l15")
+  set(DFU_DEV_REV 54115)
+  # App reserved 40KB (10*4096) for nRF54L15
+  set(DFU_APP_DATA_RESERVED 10*4096)
+  target_compile_definitions(bootloader PUBLIC NRF54L15_XXAA)
+  if (NOT DEFINED SD_NAME)
+    set(SD_NAME s145)
+  endif ()
 else ()
   message(FATAL_ERROR "MCU_VARIANT ${MCU_VARIANT} is unknown")
 endif ()
@@ -248,7 +263,14 @@ endif ()
 string(TOUPPER ${SD_NAME} SD_NAME_UPPER)
 target_compile_definitions(bootloader PUBLIC ${SD_NAME_UPPER})
 
-set(SD_FILENAME ${SD_NAME}_nrf52_${SD_VERSION})
+# Set SoftDevice chip family name based on MCU variant
+if (MCU_VARIANT STREQUAL "nrf54l15")
+  set(SD_CHIP_FAMILY nrf54l)
+else ()
+  set(SD_CHIP_FAMILY nrf52)
+endif ()
+
+set(SD_FILENAME ${SD_NAME}_${SD_CHIP_FAMILY}_${SD_VERSION})
 set(SD_HEX ${SOFTDEVICE_DIR}/${SD_FILENAME}/${SD_FILENAME}_softdevice.hex)
 
 target_include_directories(bootloader PUBLIC
