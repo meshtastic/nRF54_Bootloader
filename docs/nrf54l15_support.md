@@ -25,8 +25,8 @@ Nordic Semiconductor announced bare metal support for the nRF54L series chips in
 ### Flash Memory Map (1.5 MB total)
 ```
 0x000000 - 0x001000: MBR (4 KB)
-0x001000 - 0x02D000: SoftDevice S145 (~180 KB estimated)
-0x02D000 - 0x16A000: Application Space (~1.24 MB)
+0x001000 - 0x025000: SoftDevice S145 (144 KB)
+0x025000 - 0x16A000: Application Space (~1.32 MB)
 0x16A000 - 0x17D800: Bootloader (Debug, 78 KB)
 0x174000 - 0x17D800: Bootloader (Release, 38 KB)
 0x17D800 - 0x17E000: Bootloader Config (2 KB)
@@ -36,10 +36,10 @@ Nordic Semiconductor announced bare metal support for the nRF54L series chips in
 
 ### RAM Memory Map (256 KB total)
 ```
-0x20000000 - 0x20004000: SoftDevice RAM (~16 KB estimated)
-0x20003F7C - 0x20003F80: Double Reset Detection (4 bytes)
-0x20003F80 - 0x20004000: NOINIT (128 bytes, bond information)
-0x20004000 - 0x20040000: Bootloader RAM (240 KB)
+0x20000000 - 0x20003000: SoftDevice RAM (12 KB)
+0x20002F7C - 0x20002F80: Double Reset Detection (4 bytes)
+0x20002F80 - 0x20003000: NOINIT (128 bytes, bond information)
+0x20003000 - 0x20040000: Bootloader RAM (244 KB)
 ```
 
 ## Implementation Details

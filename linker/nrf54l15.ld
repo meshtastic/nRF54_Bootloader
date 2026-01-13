@@ -26,15 +26,15 @@ MEMORY
 
   /** RAM Region for bootloader. nRF54L15 has 256KB RAM */
   /* Avoid conflict with NOINIT for OTA bond sharing */
-  /* SoftDevice S145 estimated to use ~16KB RAM, bootloader starts at 0x20004000 */
-  RAM (rwx) :  ORIGIN = 0x20004000, LENGTH = 0x20040000-0x20004000
+  /* SoftDevice S145 uses 5.9 KB + 1.8 KB call stack = 7.7 KB, allocated 12 KB for configuration headroom */
+  RAM (rwx) :  ORIGIN = 0x20003000, LENGTH = 0x20040000-0x20003000
 
   /* Location for double reset detection, no init */
-  DBL_RESET (rwx) :  ORIGIN = 0x20003F7C, LENGTH = 0x04
+  DBL_RESET (rwx) :  ORIGIN = 0x20002F7C, LENGTH = 0x04
 
   /** Location of non initialized RAM. Non initialized RAM is used for exchanging bond information
    *  from application to bootloader when using buttonless DFU OTA. */
-  NOINIT (rwx) :  ORIGIN = 0x20003F80, LENGTH = 0x80
+  NOINIT (rwx) :  ORIGIN = 0x20002F80, LENGTH = 0x80
 
 
 
