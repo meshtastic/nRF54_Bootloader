@@ -18,7 +18,7 @@ Nordic Semiconductor announced bare metal support for the nRF54L series chips in
 - **Type:** Central and multirole Bluetooth LE protocol stack
 - **Connections:** Up to 5 concurrent links in all roles (Broadcaster, Central, Observer, Peripheral)
 - **Features:** Coded PHY and Extended Advertising support
-- **Version:** 1.0.0 (initial support)
+- **Version:** 9.0.0 (API published, binary pending)
 
 ## Memory Layout
 
@@ -74,7 +74,7 @@ Nordic Semiconductor announced bare metal support for the nRF54L series chips in
 | DFU_DEV_REV | 54115 | Device revision for DFU safety checks |
 | DFU_APP_DATA_RESERVED | 40 KB | Reserved space for DFU |
 | SD_NAME | s145 | SoftDevice name |
-| SD_VERSION | 1.0.0 | SoftDevice version (default) |
+| SD_VERSION | 9.0.0 | SoftDevice version (default) |
 | UF2_FAMILY_ID | 0xADA54115 | UF2 family identifier |
 | BOOTLOADER_START | 0x174000 | Bootloader start address (release) |
 | BOOTLOADER_START_DEBUG | 0x16A000 | Bootloader start address (debug) |
@@ -94,7 +94,7 @@ Nordic Semiconductor announced bare metal support for the nRF54L series chips in
 
 2. **Install SoftDevice S145**:
    - Download SoftDevice S145 for nRF54L from Nordic Semiconductor
-   - Extract to `lib/softdevice/s145_nrf54l_1.0.0/`
+   - Extract to `lib/softdevice/s145_nrf54l_9.0.0/`
    - The directory should contain the SoftDevice hex file and API headers
 
 ### Build Commands
@@ -175,7 +175,7 @@ This implementation is initial support based on Nordic's bare metal announcement
 ## Notes
 
 - The UF2 family ID `0xADA54115` is derived from the nRF52 pattern and may need to be registered officially
-- SoftDevice S145 version 1.0.0 is assumed; update `SD_VERSION` in board configuration if using a different version
+- SoftDevice S145 version 9.0.0 API has been published; update `SD_VERSION` in board configuration if using a different version
 - Exact SoftDevice memory requirements will be confirmed once S145 is officially released
 - The bootloader assumes USB support similar to nRF52840; boards without USB may need modifications
 
@@ -187,3 +187,14 @@ This implementation is initial support based on Nordic's bare metal announcement
 - [ ] Verify and potentially adjust memory layout based on actual S145 size
 - [ ] Test and validate on actual hardware
 - [ ] Add CI/CD build verification for nRF54L15 targets
+
+## Version Notes
+
+**Important**: Nordic Semiconductor uses a different version numbering scheme for nRF54L SoftDevices compared to nRF52:
+
+- **nRF52 Series**: S132/S140 use versions 6.x and 7.x
+- **nRF54L Series**: S115/S145 use version 9.x
+
+SoftDevice S145 v9.0.0 API documentation was published in late 2025, with the binary release pending.
+
+For detailed validation information, see [S145 Validation Report](./s145_validation.md).

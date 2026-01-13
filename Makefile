@@ -24,7 +24,7 @@ ifndef SD_VERSION
 	ifeq ($(MCU_SUB_VARIANT),nrf52833)
 	SD_VERSION = 7.3.0
 	else ifeq ($(MCU_SUB_VARIANT),nrf54l15)
-	SD_VERSION = 1.0.0
+	SD_VERSION = 9.0.0
 	else
 	SD_VERSION = 6.1.1
 	endif
