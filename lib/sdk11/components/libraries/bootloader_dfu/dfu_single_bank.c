@@ -65,18 +65,6 @@ static void pstorage_callback_handler(pstorage_handle_t * p_handle,
             }
             break;
 
-        case PSTORAGE_CLEAR_OP_CODE:
-            if (m_dfu_state == DFU_STATE_PREPARING)
-            {
-                m_functions.cleared();
-                m_dfu_state = DFU_STATE_RDY;
-                if (m_data_pkt_cb != NULL)
-                {
-                    m_data_pkt_cb(START_PACKET, result, p_data);
-                }
-            }
-            break;
-
         default:
             break;
     }
@@ -124,45 +112,7 @@ static uint32_t dfu_timer_restart(void)
 }
 
 
-/**@brief   Function for preparing of flash before receiving SoftDevice image.
- *
- * @details This function will erase current application area to ensure sufficient amount of
- *          storage for the SoftDevice image. Upon erase complete a callback will be done.
- *          See \ref dfu_bank_prepare_t for further details.
- */
-static void dfu_prepare_func_app_erase(uint32_t image_size)
-{
-    mp_storage_handle_active = &m_storage_handle_app;
-
-    // Doing a SoftDevice update thus current application must be cleared to ensure enough space
-    // for new SoftDevice.
-    m_dfu_state = DFU_STATE_PREPARING;
-
-    if ( is_ota() )
-    {
-        uint32_t err_code;
-        while(1) {
-            err_code = pstorage_clear(&m_storage_handle_app, m_image_size);
-            if (err_code != NRF_ERROR_NO_MEM)
-                break;
-            // No space, wait until an entry in the queue is freed
-            while (NRF_ERROR_NOT_FOUND != proc_soc()) {
-                // nothing
-            }
-        }
-        APP_ERROR_CHECK(err_code);
-    }
-    else
-    {
-        flash_nrf5x_erase(DFU_BANK_0_REGION_START, m_image_size);
-
-        // invoke complete callback
-        pstorage_callback_handler(&m_storage_handle_app, PSTORAGE_CLEAR_OP_CODE, NRF_SUCCESS, NULL, 0);
-    }
-}
-
-
-/**@brief   Function for handling behaviour when clear operation has completed.
+/**@brief   Function for marking bank 0 invalid before the new image is written over it.
  */
 static void dfu_cleared_func_app(void)
 {
@@ -288,6 +238,7 @@ uint32_t dfu_init(void)
     }
 
     m_storage_handle_app.block_id  = DFU_BANK_0_REGION_START;
+    mp_storage_handle_active       = &m_storage_handle_app;
 
     // Create the timer to monitor the activity by the peer doing the firmware update.
     err_code = app_timer_create(&m_dfu_timer_id,
@@ -351,8 +302,6 @@ uint32_t dfu_start_pkt_handle(dfu_update_packet_t * p_packet)
     {
         return NRF_ERROR_DATA_SIZE;
     }
-    m_functions.prepare  = dfu_prepare_func_app_erase;
-    m_functions.cleared  = dfu_cleared_func_app;
 
     if (IS_UPDATING_SD(m_start_packet))
     {
@@ -373,7 +322,11 @@ uint32_t dfu_start_pkt_handle(dfu_update_packet_t * p_packet)
     err_code = dfu_timer_restart();
     VERIFY_SUCCESS(err_code);
 
-    m_functions.prepare(m_image_size);
+    m_dfu_state = DFU_STATE_RDY;
+    if (m_data_pkt_cb != NULL)
+    {
+        m_data_pkt_cb(START_PACKET, NRF_SUCCESS, NULL);
+    }
 
     return NRF_SUCCESS;
 }
@@ -481,6 +434,9 @@ uint32_t dfu_init_pkt_complete(void)
         err_code = dfu_init_prevalidate(m_init_packet, m_init_packet_length, m_start_packet.dfu_update_mode);
         if (err_code == NRF_SUCCESS)
         {
+            // RRAM is written without an erase, so the application stays intact until here: a package
+            // refused above (e.g. built for another SoftDevice) leaves the board able to boot it.
+            dfu_cleared_func_app();
             m_dfu_state = DFU_STATE_RX_DATA_PKT;
         }
         else
