@@ -37,56 +37,59 @@
  */
 
 /**
- * @addtogroup nrf_sdm_api
-  @{ */
+  @addtogroup BLE_COMMON
+  @{
+  @addtogroup  nrf_error
+  @{
+    @ingroup BLE_COMMON
+  @}
 
-#ifndef NRF_SD_ISR_VECTORS_H__
-#define NRF_SD_ISR_VECTORS_H__
+  @defgroup ble_err General error codes
+  @{
+
+  @brief General error code definitions for the BLE API.
+
+  @ingroup BLE_COMMON
+*/
+#ifndef NRF_BLE_ERR_H__
+#define NRF_BLE_ERR_H__
+
+#include "nrf_error.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @defgroup nrf_sd_isr_vectors SoftDevice Interrupt Vector Table Offsets
- * @{
- *
- *  @brief SoftDevice interrupt vector table offsets.
- *         The SoftDevice interrupt vector table contains only the addresses of the interrupt handlers
- *         required by the SoftDevice. The table is located at the SoftDevice base address. When the SoftDevice
- *         is enabled, the application must forward the interrupts corresponding to the defined offsets
- *         to the SoftDevice. The address of the interrupt handler is located at the SoftDevice base address plus the offset.
- *
- *         An example of how to forward an interrupt to the SoftDevice is shown below:
- *
- *         @code
- *         SVC_Handler:
- *           LDR   R0, =NRF_SD_ISR_OFFSET_SVC
- *           LDR   R1, =SOFTDEVICE_BASE_ADDRESS
- *           LDR   R1, [R1, R0]
- *           BX    R1
- *         @endcode
- */
-#define NRF_SD_ISR_OFFSET_RESET          (0x0000) /**< SoftDevice Reset Handler address offset */
-#define NRF_SD_ISR_OFFSET_HARDFAULT      (0x0004) /**< SoftDevice HardFault Handler address offset */
-#define NRF_SD_ISR_OFFSET_SVC            (0x0008) /**< SoftDevice SVC Handler address offset */
-#define NRF_SD_ISR_OFFSET_SWI00          (0x000c) /**< SoftDevice SWI00 Handler address offset */
-#define NRF_SD_ISR_OFFSET_AAR00_CCM00    (0x0010) /**< SoftDevice AAR00_CCM00 Handler address offset */
-#define NRF_SD_ISR_OFFSET_ECB00          (0x0014) /**< SoftDevice ECB00 Handler address offset */
-#define NRF_SD_ISR_OFFSET_TIMER10        (0x0018) /**< SoftDevice TIMER10 Handler address offset */
-#define NRF_SD_ISR_OFFSET_RADIO_0        (0x001c) /**< SoftDevice RADIO_0 Handler address offset */
-#define NRF_SD_ISR_OFFSET_GRTC_3         (0x0020) /**< SoftDevice GRTC_3 Handler address offset */
-#define NRF_SD_ISR_OFFSET_CLOCK_POWER    (0x0024) /**< SoftDevice CLOCK_POWER Handler address offset */
-/**
- * @}
- */
+/**@defgroup BLE_ERRORS Error Codes
+ * @{ */
+#define BLE_ERROR_NOT_ENABLED                (NRF_ERROR_STK_BASE_NUM+0x001) /**< @ref sd_ble_enable has not been called. */
+#define BLE_ERROR_INVALID_CONN_HANDLE        (NRF_ERROR_STK_BASE_NUM+0x002) /**< Invalid connection handle. */
+#define BLE_ERROR_INVALID_ATTR_HANDLE        (NRF_ERROR_STK_BASE_NUM+0x003) /**< Invalid attribute handle. */
+#define BLE_ERROR_INVALID_ADV_HANDLE         (NRF_ERROR_STK_BASE_NUM+0x004) /**< Invalid advertising handle. */
+#define BLE_ERROR_INVALID_ROLE               (NRF_ERROR_STK_BASE_NUM+0x005) /**< Invalid role. */
+#define BLE_ERROR_BLOCKED_BY_OTHER_LINKS     (NRF_ERROR_STK_BASE_NUM+0x006) /**< The attempt to change link settings failed due to the scheduling of other links. */
+#define BLE_ERROR_UNSUPPORTED_REMOTE_FEATURE (NRF_ERROR_STK_BASE_NUM+0x007) /**< The feature is not supported by the peer. */
+/** @} */
+
+
+/** @defgroup BLE_ERROR_SUBRANGES Module specific error code subranges
+ *  @brief Assignment of subranges for module specific error codes.
+ *  @note For specific error codes, see ble_<module>.h or ble_error_<module>.h.
+ * @{ */
+#define NRF_L2CAP_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x100) /**< L2CAP specific errors. */
+#define NRF_GAP_ERR_BASE               (NRF_ERROR_STK_BASE_NUM+0x200) /**< GAP specific errors. */
+#define NRF_GATTC_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x300) /**< GATT client specific errors. */
+#define NRF_GATTS_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x400) /**< GATT server specific errors. */
+#define NRF_GATT_ERR_BASE              (NRF_ERROR_STK_BASE_NUM+0x500) /**< GATT specific errors. */
+/** @} */
 
 #ifdef __cplusplus
 }
 #endif
+#endif
 
-#endif /* NRF_SD_ISR_VECTORS_H__ */
 
 /**
- * @}
- */
+  @}
+  @}
+*/

@@ -4,7 +4,7 @@
  *   0x00000000  bootloader (31 KB code + 1 KB CF2 config)
  *   0x00008000  application (own vector table, started by bootloader_app_start)
  *   0x0014f000  bootloader settings page (LittleFS ends one page below)
- *   0x00158c00  SoftDevice s145, up to the end of RRAM
+ *   0x0015a800  SoftDevice s145, up to the end of RRAM
  * The SoftDevice keeps RAM 0x20000000-0x20004800; the last 128 bytes of RAM hold the
  * double-reset marker and the BLE peer data handed over from the application. */
 SEARCH_DIR(.)

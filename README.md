@@ -36,7 +36,7 @@ its own vector table at `0x8000` and forwards the SoftDevice interrupts.
 | CF2 config | `0x7C00` | `0x7C00` | `0x7C00` |
 | Application | `0x8000 – 0x47000` | `0x8000 – 0xC7000` | `0x8000 – 0x147000` |
 | Bootloader settings page | `0x4F000` | `0xCF000` | `0x14F000` |
-| SoftDevice s145 | `0x58C00` | `0xD8C00` | `0x158C00` |
+| SoftDevice s145 10.0.1 | `0x5A800` | `0xDA800` | `0x15A800` |
 
 RAM: `0x20000000 – 0x20004800` SoftDevice, bootloader and application from
 `0x20004800`; the last 128 bytes (`0x2003FF80`) hold the BLE peer data and
@@ -111,9 +111,13 @@ pyocd load -t nrf54l --erase sector <s145_softdevice.hex>
 ### DFU an application over serial
 
 ```bash
-adafruit-nrfutil dfu genpkg --dev-type 0x0054 --sd-req 0x3024 --application app.hex app_dfu.zip
+adafruit-nrfutil dfu genpkg --dev-type 0x0054 --sd-req 0x310D --application app.hex app_dfu.zip
 adafruit-nrfutil dfu serial --package app_dfu.zip -p /dev/ttyACM0 -b 115200 --singlebank
 ```
+
+`--sd-req` is the SoftDevice FWID: `0x310D` for s145 10.0.1, on every
+variant. It was `0x3024` for s145 9.0.0, which this bootloader no longer
+ships; devices still running that SoftDevice need it reflashed.
 
 ## Build options
 
@@ -141,7 +145,7 @@ cmake -G Ninja -B _build -DBOARD=nrf54l15dk -DSIGNED_FW=ON -DSIGNED_FW_QX='...' 
 Create a signed DFU package:
 
 ```bash
-adafruit-nrfutil dfu genpkg --dev-type 0x0054 --sd-req 0x3024 --application app.hex --key-file stored_key.pem app_dfu.zip
+adafruit-nrfutil dfu genpkg --dev-type 0x0054 --sd-req 0x310D --application app.hex --key-file stored_key.pem app_dfu.zip
 ```
 
 ## Adding a new board

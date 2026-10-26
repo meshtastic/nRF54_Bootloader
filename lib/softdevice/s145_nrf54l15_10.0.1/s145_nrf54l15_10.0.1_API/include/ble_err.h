@@ -36,66 +36,60 @@
  * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef NRF_SVC__
-#define NRF_SVC__
+/**
+  @addtogroup BLE_COMMON
+  @{
+  @addtogroup  nrf_error
+  @{
+    @ingroup BLE_COMMON
+  @}
 
-#include "stdint.h"
+  @defgroup ble_err General error codes
+  @{
+
+  @brief General error code definitions for the BLE API.
+
+  @ingroup BLE_COMMON
+*/
+#ifndef NRF_BLE_ERR_H__
+#define NRF_BLE_ERR_H__
+
+#include "nrf_error.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/** @brief Supervisor call declaration.
- *
- * A call to a function marked with @ref SVCALL, will trigger a Supervisor Call (SVC) Exception.
- * The SVCs with SVC numbers 0x00-0x0F are forwared to the application. All other SVCs are handled by the SoftDevice.
- *
- * @param[in] number      The SVC number to be used.
- * @param[in] return_type The return type of the SVC function.
- * @param[in] signature   Function signature. The function can have at most four arguments.
- */
+/**@defgroup BLE_ERRORS Error Codes
+ * @{ */
+#define BLE_ERROR_NOT_ENABLED                (NRF_ERROR_STK_BASE_NUM+0x001) /**< @ref sd_ble_enable has not been called. */
+#define BLE_ERROR_INVALID_CONN_HANDLE        (NRF_ERROR_STK_BASE_NUM+0x002) /**< Invalid connection handle. */
+#define BLE_ERROR_INVALID_ATTR_HANDLE        (NRF_ERROR_STK_BASE_NUM+0x003) /**< Invalid attribute handle. */
+#define BLE_ERROR_INVALID_ADV_HANDLE         (NRF_ERROR_STK_BASE_NUM+0x004) /**< Invalid advertising handle. */
+#define BLE_ERROR_INVALID_ROLE               (NRF_ERROR_STK_BASE_NUM+0x005) /**< Invalid role. */
+#define BLE_ERROR_BLOCKED_BY_OTHER_LINKS     (NRF_ERROR_STK_BASE_NUM+0x006) /**< The attempt to change link settings failed due to the scheduling of other links. */
+#define BLE_ERROR_UNSUPPORTED_REMOTE_FEATURE (NRF_ERROR_STK_BASE_NUM+0x007) /**< The feature is not supported by the peer. */
+/** @} */
 
-#ifdef SVCALL_AS_NORMAL_FUNCTION
-#define SVCALL(number, return_type, signature) return_type signature
-#else
 
-#ifndef SVCALL
-#if defined (__CC_ARM)
-#define SVCALL(number, return_type, signature) return_type __svc(number) signature
-#elif defined (__GNUC__)
-#ifdef __cplusplus
-#define GCC_CAST_CPP (uint16_t)
-#else
-#define GCC_CAST_CPP
-#endif
-#define SVCALL(number, return_type, signature)             \
-  _Pragma("GCC diagnostic push")                           \
-  _Pragma("GCC diagnostic ignored \"-Wreturn-type\"")      \
-  _Pragma("GCC diagnostic ignored \"-Wunused-parameter\"") \
-  __attribute__((naked))                                   \
-  __attribute__((unused))                                  \
-  static return_type signature                             \
-  {                                                        \
-    __asm(                                                 \
-        "svc %0\n"                                         \
-        "bx r14" : : "I" (GCC_CAST_CPP number) : "r0"      \
-    );                                                     \
-  }                                                        \
-  _Pragma("GCC diagnostic pop")
-
-#elif defined (__ICCARM__)
-#define PRAGMA(x) _Pragma(#x)
-#define SVCALL(number, return_type, signature)          \
-PRAGMA(swi_number = (number))                           \
- __swi return_type signature;
-#else
-#define SVCALL(number, return_type, signature) return_type signature
-#endif
-#endif  // SVCALL
-
-#endif  // SVCALL_AS_NORMAL_FUNCTION
+/** @defgroup BLE_ERROR_SUBRANGES Module specific error code subranges
+ *  @brief Assignment of subranges for module specific error codes.
+ *  @note For specific error codes, see ble_<module>.h or ble_error_<module>.h.
+ * @{ */
+#define NRF_L2CAP_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x100) /**< L2CAP specific errors. */
+#define NRF_GAP_ERR_BASE               (NRF_ERROR_STK_BASE_NUM+0x200) /**< GAP specific errors. */
+#define NRF_GATTC_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x300) /**< GATT client specific errors. */
+#define NRF_GATTS_ERR_BASE             (NRF_ERROR_STK_BASE_NUM+0x400) /**< GATT server specific errors. */
+#define NRF_GATT_ERR_BASE              (NRF_ERROR_STK_BASE_NUM+0x500) /**< GATT specific errors. */
+/** @} */
 
 #ifdef __cplusplus
 }
 #endif
-#endif  // NRF_SVC__
+#endif
+
+
+/**
+  @}
+  @}
+*/

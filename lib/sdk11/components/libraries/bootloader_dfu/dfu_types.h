@@ -83,13 +83,13 @@ static inline uint32_t sd_softdevice_vector_table_base_set(uint32_t addr)
 #define BOOTLOADER_REGION_START             0x00000000
 #define CODE_REGION_1_START                 0x00008000
 #if defined(NRF54L05_XXAA)
-  #define SOFTDEVICE_REGION_START           0x00058C00
+  #define SOFTDEVICE_REGION_START           0x0005A800
   #define BOOTLOADER_SETTINGS_ADDRESS       0x0004F000
 #elif defined(NRF54L10_XXAA)
-  #define SOFTDEVICE_REGION_START           0x000D8C00
+  #define SOFTDEVICE_REGION_START           0x000DA800
   #define BOOTLOADER_SETTINGS_ADDRESS       0x000CF000
 #elif defined(NRF54L15_XXAA)
-  #define SOFTDEVICE_REGION_START           0x00158C00
+  #define SOFTDEVICE_REGION_START           0x0015A800
   #define BOOTLOADER_SETTINGS_ADDRESS       0x0014F000
 #else
   #error "No nRF54L target defined"
