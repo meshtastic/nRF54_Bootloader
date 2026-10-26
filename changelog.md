@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.5.0 — 2026-10-26
+
+Requires s145 10.0.1. Boards on 9.0.0 / v0.3.0 can't update by DFU: reflash
+the SoftDevice, this bootloader and an application built for 10.0.1 over SWD
+once. Without a chip erase, InternalFS and the bootloader settings are kept.
+
+- s145 10.0.1 on nRF54L05/L10/L15, one SoftDevice hex per SoC; the L05 and
+  L10 no longer get the L15 image
+- SoftDevice base 0x5A800 / 0xDA800 / 0x15A800; DFU FWID 0x310D
+  (`--sd-req 0x310D`, was 0x3024)
+- Single-bank DFU checks the init packet before marking the application
+  invalid; a refused package leaves the application in place
+- `nrf_nvic.h` and `ble_l2cap.h` shims moved out of the vendored SoftDevice
+  tree into `src/`
+
 ## 0.3.0 — 2026-09-14
 
 - Documentation describes the s145 layout, the button handling per board and
@@ -37,5 +52,6 @@ XIAO nRF54L15, XIAO nRF54L15 Sense.
 — nRF54L has no USB peripheral.
 
 **Companion packages:**
+
 - PlatformIO platform: [caveman99/platform-nordicnrf54](https://github.com/caveman99/platform-nordicnrf54)
 - Arduino core framework: [caveman99/nRF54_Arduino](https://github.com/caveman99/nRF54_Arduino)
